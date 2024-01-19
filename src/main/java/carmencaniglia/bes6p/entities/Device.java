@@ -15,5 +15,10 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String category;
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private State state;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

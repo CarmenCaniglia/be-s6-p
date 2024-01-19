@@ -1,7 +1,8 @@
 package carmencaniglia.bes6p.controllers;
 
 import carmencaniglia.bes6p.entities.Device;
-import carmencaniglia.bes6p.entities.User;
+import carmencaniglia.bes6p.payloads.devices.DeviceDTO;
+import carmencaniglia.bes6p.payloads.devices.DeviceResDTO;
 import carmencaniglia.bes6p.services.DevicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,12 +26,13 @@ public class DevicesController {
     }
     @GetMapping("/{deviceId}")
     public Device getDeviceById(@PathVariable long deviceId){
-       return devicesService.findById(deviceId);
+        return devicesService.findById(deviceId);
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Device createDevice(@RequestBody Device newDevicePayload){
-        return devicesService.save(newDevicePayload);
+    public DeviceResDTO createDevice(@RequestBody DeviceDTO newDevicePayload){
+        Device newDevice = devicesService.save(newDevicePayload);
+        return new DeviceResDTO(newDevice.getId());
     }
     @PutMapping("/{deviceId}")
     public Device updateDevice(@PathVariable long deviceId,@RequestBody Device updateDevicePayload){

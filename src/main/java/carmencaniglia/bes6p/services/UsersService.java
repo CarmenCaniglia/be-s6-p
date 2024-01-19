@@ -3,6 +3,7 @@ package carmencaniglia.bes6p.services;
 import carmencaniglia.bes6p.entities.User;
 import carmencaniglia.bes6p.exceptions.BadRequestException;
 import carmencaniglia.bes6p.exceptions.NotFoundException;
+import carmencaniglia.bes6p.payloads.users.UserDTO;
 import carmencaniglia.bes6p.repositories.UsersDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class UsersService {
@@ -22,15 +22,20 @@ public class UsersService {
         return usersDAO.findAll(pageable);
     }
 
-    public User save(User body){
-        usersDAO.findByEmail(body.getEmail()).ifPresent(user -> {
+    public User save(UserDTO body){
+        usersDAO.findByEmail(body.email()).ifPresent(user -> {
             throw new BadRequestException("The email "+ user.getEmail() + " is already in use!");
         });
-        usersDAO.findByUsername(body.getUsername()).ifPresent(user -> {
+        usersDAO.findByUsername(body.username()).ifPresent(user -> {
             throw new BadRequestException("The username "+ user.getUsername() + " is already in use!");
         });
-        body.setAvatar("https://ui-avatars.com/api/?name="+body.getName()+"+"+body.getSurname());
-        return usersDAO.save(body);
+        User newUser = new User();
+        newUser.setAvatar("https://ui-avatars.com/api/?name="+body.name()+"+"+body.surname());
+        newUser.setUsername(body.username());
+        newUser.setName(body.name());
+        newUser.setSurname(body.surname());
+        newUser.setEmail(body.email());
+        return usersDAO.save(newUser);
     }
 
     public User findById(long id){

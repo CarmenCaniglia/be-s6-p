@@ -1,7 +1,9 @@
 package carmencaniglia.bes6p.services;
 
 import carmencaniglia.bes6p.entities.Device;
+import carmencaniglia.bes6p.entities.State;
 import carmencaniglia.bes6p.exceptions.NotFoundException;
+import carmencaniglia.bes6p.payloads.devices.DeviceDTO;
 import carmencaniglia.bes6p.repositories.DevicesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,8 +24,11 @@ public class DevicesService {
     return devicesDAO.findAll(pageable);
     }
 
-    public Device save(Device body){
-    return devicesDAO.save(body);
+    public Device save(DeviceDTO body){
+        Device device = new Device();
+        device.setCategory(body.category());
+        device.setState(State.AVAILABLE);
+    return devicesDAO.save(device);
     }
 
     public Device findById(long id){
