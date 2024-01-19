@@ -53,9 +53,8 @@ public class DevicesService {
     }
 
     public Device assignDevice(long deviceId, long userId){
-        Device device = findById(deviceId);
-        User user = usersDAO.findById(userId).orElseThrow(()->new NotFoundException("User with id: " + user.getId() + " not found!"));
-        device.setUser(user);
+        Device device = devicesDAO.findById(deviceId).orElseThrow(() -> new NotFoundException(deviceId));
+        device.setUser(usersDAO.findById(userId).orElseThrow(() -> new NotFoundException(userId)));
         device.setState(State.ASSIGNED);
         return devicesDAO.save(device);
     }
