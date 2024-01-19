@@ -1,12 +1,15 @@
 package carmencaniglia.bes6p.controllers;
 
 import carmencaniglia.bes6p.entities.User;
+import carmencaniglia.bes6p.exceptions.BadRequestException;
 import carmencaniglia.bes6p.payloads.users.UserDTO;
 import carmencaniglia.bes6p.payloads.users.UserResDTO;
 import carmencaniglia.bes6p.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,9 +31,14 @@ public class UsersController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResDTO createUser(@RequestBody UserDTO newUserPayload){
+    public UserResDTO createUser(@RequestBody @Validated UserDTO newUserPayload, BindingResult validation){
+        if(validation.hasErrors()){
+            throw new BadRequestException("Payload's error!");
+        }else {
     User newUser = usersService.save(newUserPayload);
     return new UserResDTO(newUser.getId());
+        }
+
     }
     @PutMapping("/{userId}")
     public User updateUser(@PathVariable long userId,@RequestBody User updateUserPayload){

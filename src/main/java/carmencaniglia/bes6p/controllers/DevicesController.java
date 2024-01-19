@@ -1,12 +1,15 @@
 package carmencaniglia.bes6p.controllers;
 
 import carmencaniglia.bes6p.entities.Device;
+import carmencaniglia.bes6p.exceptions.BadRequestException;
 import carmencaniglia.bes6p.payloads.devices.DeviceDTO;
 import carmencaniglia.bes6p.payloads.devices.DeviceResDTO;
 import carmencaniglia.bes6p.services.DevicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,10 +33,15 @@ public class DevicesController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DeviceResDTO createDevice(@RequestBody DeviceDTO newDevicePayload){
+    public DeviceResDTO createDevice(@RequestBody @Validated DeviceDTO newDevicePayload, BindingResult validation){
+        if(validation.hasErrors()) {
+            throw new BadRequestException("Invalid device payload");
+        }else{
         Device newDevice = devicesService.save(newDevicePayload);
         return new DeviceResDTO(newDevice.getId());
+        }
     }
+
     @PutMapping("/{deviceId}")
     public Device updateDevice(@PathVariable long deviceId,@RequestBody Device updateDevicePayload){
         return devicesService.findByIdAndUpdate(deviceId, updateDevicePayload);
